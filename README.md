@@ -22,13 +22,23 @@ dbtalk reads the `manifest.json` of your dbt porject and uses Claude to answer q
 
 ### Docker
 
+A jaffle shop manifest is included in the image at `/app/examples/jaffle_shop_manifest.json` so you can run immediately without a dbt project.
+
 ```bash
 docker build -t dbtalk .
 
 docker run --rm \
   -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
-  -v /path/to/your/dbt/project/target:/manifest:ro \
-  dbtalk ask "what does fct_revenue depend on?" --manifest /manifest/manifest.json
+  dbtalk ask "what does orders depend on?" --manifest /app/examples/jaffle_shop_manifest.json
+```
+
+To use your own manifest, mount it as a volume:
+
+```bash
+docker run --rm \
+  -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
+  -v /path/to/your/dbt/target:/manifest:ro \
+  dbtalk ask "what does orders depend on?" --manifest /manifest/manifest.json
 ```
 
 ### Local (venv)
@@ -46,7 +56,8 @@ pip install -e .
 
 export ANTHROPIC_API_KEY="sk-ant-..."   # Windows: $env:ANTHROPIC_API_KEY = "sk-ant-..."
 
-dbtalk ask "what does fct_revenue depend on?" --manifest ./target/manifest.json
+# Use the included jaffle shop manifest to get started immediately
+dbtalk ask "what does orders depend on?" --manifest examples/jaffle_shop_manifest.json
 ```
 
 ---
