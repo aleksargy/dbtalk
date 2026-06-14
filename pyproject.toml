@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dbtalk"
+version = "0.1.0"
+description = "Ask natural language questions about your dbt project"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic",
+    "click",
+    "chromadb",
+    "pydantic",
+    "rich",
+    "networkx",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+dbtalk = "dbtalk.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
