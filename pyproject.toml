@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+gemini = ["google-genai"]
 
 [project.scripts]
 dbtalk = "dbtalk.cli:cli"
