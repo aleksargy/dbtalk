@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 
 class DbtColumn(BaseModel):
@@ -14,6 +14,11 @@ class DbtColumn(BaseModel):
     data_type: str = ""
     tags: list[str] = []
     meta: dict = {}
+
+    @field_validator("data_type", mode="before")
+    @classmethod
+    def coerce_null_data_type(cls, v: object) -> str:
+        return v if isinstance(v, str) else ""
 
 
 class DbtNodeDependsOn(BaseModel):
