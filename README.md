@@ -1,12 +1,12 @@
 # dbtalk
 
-Ask natural language questions about your dbt project's lineage graph — straight from the terminal.
+Ask natural language questions about your dbt project's lineage graph, right from the terminal.
 
 ```
 dbtalk ask "what does fct_revenue depend on?" --manifest ./target/manifest.json
 ```
 
-dbtalk reads your `manifest.json` (produced by `dbt docs generate` or `dbt compile`) and uses Claude to answer questions about model dependencies, blast radius, and metadata. No database connection required. No dbt installation required.
+dbtalk reads the `manifest.json` of your dbt porject and uses Claude to answer questions about model dependencies, blast radius, and metadata. No database connection required or dbt installation required.
 
 ---
 
@@ -75,7 +75,7 @@ dbtalk ask "<question>" --manifest <path/to/manifest.json>
 
 ## What You Can Ask
 
-### Lineage — what does a model depend on?
+### Lineage: what does a model depend on?
 
 ```bash
 dbtalk ask "what does fct_revenue depend on?" --manifest ./target/manifest.json
@@ -83,14 +83,14 @@ dbtalk ask "what are all the upstream sources for fct_customers?" --manifest ./t
 dbtalk ask "which models touch the customers source?" --manifest ./target/manifest.json
 ```
 
-### Blast radius — what breaks if I change something?
+### Blast radius: what breaks if I change something?
 
 ```bash
 dbtalk ask "what breaks if I change stg_orders?" --manifest ./target/manifest.json
 dbtalk ask "how many models depend on int_orders?" --manifest ./target/manifest.json
 ```
 
-### Governance — find models missing tests or containing PII
+### Governance: find models missing tests or containing PII
 
 ```bash
 dbtalk ask "find models with no tests" --manifest ./target/manifest.json
@@ -108,7 +108,7 @@ dbtalk passes your question to Claude along with three tools:
 |------|-------------|
 | `get_lineage` | Traverses the dependency graph upstream or downstream from a named model |
 | `blast_radius` | Returns all downstream dependents recursively, grouped by dbt layer |
-| `search_models` | Semantic search over model and column descriptions (including PII tags and test coverage) |
+| `search_models` | Semantic search over model and column descriptions |
 
 Claude decides which tool(s) to call, executes them against your manifest, and writes a plain-English answer citing model names.
 
@@ -116,17 +116,17 @@ Claude decides which tool(s) to call, executes them against your manifest, and w
 manifest.json
      |
      v
-manifest.py       — parses JSON into typed Pydantic models
+manifest.py — parses JSON into typed Pydantic models
      |
-     +---> tools.py       — get_lineage / blast_radius (networkx graph traversal)
+     +---> tools.py — get_lineage / blast_radius (networkx graph traversal)
      |
-     +---> embeddings.py  — search_models (ChromaDB semantic search)
-     |
-     v
-agent.py          — Anthropic API + tool dispatch
+     +---> embeddings.py — search_models (ChromaDB semantic search)
      |
      v
-cli.py            — dbtalk ask (Click entrypoint)
+agent.py — Anthropic API + tool dispatch
+     |
+     v
+cli.py — dbtalk ask (Click entrypoint)
 ```
 
 dbtalk never reads `.sql` files. All information comes from `manifest.json`.
@@ -135,22 +135,18 @@ dbtalk never reads `.sql` files. All information comes from `manifest.json`.
 
 ## Running Tests
 
-The test suite uses a synthetic fixture manifest — no API key, no dbt project, no database needed.
+The test suite uses a synthetic fixture manifest and a mock Anthropic client.
 
 ```bash
 pip install -e ".[dev]"
 pytest tests/
 ```
 
-```
-49 passed in 4.29s
-```
-
 ---
 
 ## Configuration
 
-The only configuration dbtalk needs is your Anthropic API key, set as an environment variable:
+The only configuration dbtalk needs is an Anthropic API key, set as an environment variable:
 
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
